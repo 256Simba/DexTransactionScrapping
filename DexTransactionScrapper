@@ -1,0 +1,34 @@
+import requests
+from bs4 import BeautifulSoup
+
+# URL de la page à analyser
+url = "https://www.defined.fi/arb/0x5bcb14eeb3739a2140ea23535c96394597c85e82?cache=316eb"
+
+# Envoyer une requête GET à l'URL
+response = requests.get(url)
+
+# Vérifier que la requête a réussi
+if response.status_code != 200:
+    print("La requête a échoué")
+    exit()
+
+# Analyser le contenu HTML de la page avec BeautifulSoup
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Trouver toutes les balises div avec la classe "css-1p40r23"
+divs = soup.find_all("div", {"class": "css-1p40r23"})
+
+# Parcourir toutes les balises div et extraire la date, l'heure et le wallet de chaque transaction
+for div in divs:
+    # Extraire le texte de la première balise div
+    text = div.find("div").text.strip()
+
+    # Extraire la balise span contenant la date et l'heure
+    span = div.find("span", {"class": "MuiTypography-root MuiTypography-caption css-1rxp0nc"})
+    date_time = span["aria-label"]
+
+    # Extraire le wallet de la deuxième balise div
+    wallet = div.find_all("div")[1].text.strip()
+
+    # Afficher la transaction
+    print(f"Date et heure : {date_time}, Wallet : {wallet}, Prix : {text}")
